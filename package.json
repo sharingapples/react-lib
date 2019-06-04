@@ -2,7 +2,9 @@
   "name": "@rchs/react-lib",
   "version": "0.0.0",
   "description": "React Libraries",
-  "main": "index.js",
+  "workspaces": [
+    "packages/*"
+  ],
   "repository": "git@github.com:rchs/react-lib",
   "author": "Ranjan Shrestha <ranjan@sharingapples.com>",
   "license": "MIT",
