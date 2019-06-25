@@ -8,7 +8,6 @@ function destructure(structure, method) {
     return res;
   }, {});
 
-  console.log('Result', result);
   return result;
 }
 
