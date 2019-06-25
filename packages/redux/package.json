@@ -8,7 +8,7 @@
     "lint": "eslint src",
     "build": "babel src -d dist"
   },
-  "repository": "git@github.com:sharingapples/react",
+  "repository": "git@github.com:sharingapples/react-lib",
   "author": "Ranjan Shrestha <ranjan@sharingapples.com>",
   "publishConfig": {
     "access": "public"
