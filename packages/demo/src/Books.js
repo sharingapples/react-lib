@@ -42,7 +42,7 @@ function addBook() {
 function replaceBook() {
   reduxDB.books.replace({
     id: Math.random(),
-    title: `${Math.random()} via Repace`,
+    title: `${Math.random()} via Replace`,
   });
 }
 
