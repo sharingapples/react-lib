@@ -1,14 +1,14 @@
 import { reducer as normalizedReducer } from './normalized';
 
-export default function createReducer(schema, groupBys) {
+export default function createReducer(schema, version, groupBys) {
   // Handle common scenario, no groupBys
   if (groupBys.length === 1) {
-    return (state = {}, action) => {
+    return (state = { version }, action) => {
       if (action.schema !== schema) return state;
 
       const next = normalizedReducer(state._, action);
       if (next === state._) return state;
-      return { _: next };
+      return { _: next, version };
     };
   }
 
@@ -23,10 +23,10 @@ export default function createReducer(schema, groupBys) {
   const reducerKeys = Object.keys(reducers);
 
   // The schema reducer
-  return (state = {}, action) => {
+  return (state = { version }, action) => {
     if (action.schema !== schema) return state;
     let hasChanged = false;
-    const nextState = {};
+    const nextState = { version };
     for (let i = 0; i < reducerKeys.length; i += 1) {
       const key = reducerKeys[i];
       const reducer = reducers[key];

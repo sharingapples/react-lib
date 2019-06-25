@@ -15,7 +15,7 @@ export default function schema(name, version, groupByDefs = null) {
     : [];
 
   return {
-    getReducer: () => createReducer(name, groupBys),
+    getReducer: () => createReducer(name, version, groupBys),
     getSelector: getState => createSelector(getState, groupBys),
     getActor: dispatch => createActor(name, dispatch, groupBys),
     onSave: () => console.log('onSave Event'),
