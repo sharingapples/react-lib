@@ -4,6 +4,11 @@ import createActor from './createActor';
 
 import GroupBy from './groupBy';
 
+const reservedKeyWords = [
+  'allIds', 'byId', 'version',
+  'length', 'values', 'by', '_',
+];
+
 export default function schema(name, version, groupByDefs = null) {
   // Create object based on the groupBys
   if (typeof groupByDefs !== 'object') {
@@ -11,8 +16,12 @@ export default function schema(name, version, groupByDefs = null) {
   }
 
   const groupBys = groupByDefs
-    ? Object.keys(groupByDefs).map(key => new GroupBy(key, groupByDefs[key]))
-    : [];
+    ? Object.keys(groupByDefs).map((key) => {
+      if (reservedKeyWords.includes(key)) {
+        throw new Error(`GroupBy name ${key} in schema ${name} is a reserved keyword.`);
+      }
+      return new GroupBy(key, groupByDefs[key]);
+    }) : [];
 
   return {
     getReducer: () => createReducer(name, version, groupBys),
