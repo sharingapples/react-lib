@@ -18,7 +18,19 @@ export default function schema(name, version, groupByDefs = null) {
     getReducer: () => createReducer(name, version, groupBys),
     getSelector: getState => createSelector(getState, groupBys),
     getActor: dispatch => createActor(name, dispatch, groupBys),
-    onSave: () => console.log('onSave Event'),
-    onRestore: () => console.log('onRestore Event'),
+    onSave: state => state,
+    onRestore: (state) => {
+      // Avoid errors arising due to version incompatibility
+      const restoreState = state;
+      restoreState._ = state._;
+      let changed = false;
+      groupBys.forEach((groupBy) => {
+        const prevState = state[groupBy.name];
+        const nextState = groupBy.onRestore(prevState);
+        restoreState[groupBy.name] = nextState;
+        changed = changed || prevState !== nextState;
+      });
+      return changed ? restoreState : state;
+    },
   };
 }
