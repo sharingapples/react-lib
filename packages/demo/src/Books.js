@@ -24,9 +24,9 @@ function Book({ id }: { id: string }) {
     <div>
       <h3>{book.title}</h3>
       <div>
-        <button onClick={editTitle}>Edit</button>
-        <button onClick={replace}>Replace</button>
-        <button onClick={remove}>Delete</button>
+        <button type="button" onClick={editTitle}>Edit</button>
+        <button type="button" onClick={replace}>Replace</button>
+        <button type="button" onClick={remove}>Delete</button>
       </div>
     </div>
   );
@@ -49,11 +49,10 @@ function replaceBook() {
 export default function Books() {
   const books = useSelector(getAllBooks);
 
-  console.log('Books', books);
   return (
     <div>
-      <button onClick={addBook}>Add</button>
-      <button onClick={replaceBook}>Replace</button>
+      <button type="button" onClick={addBook}>Add</button>
+      <button type="button" onClick={replaceBook}>Replace</button>
       <Loading visible={!books}>
         <div>
           {books && books.map(id => <Book key={id} id={id} />)}
