@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint src",
-    "build": "babel src -d dist"
+    "build": "babel src -d dist",
+    "fixEntry": "node ../../scripts/fixEntry.js",
+    "prepublish": "yarn run build && yarn run fixEntry"
   },
   "repository": "git@github.com:sharingapples/react-lib",
   "author": "Ranjan Shrestha <ranjan@sharingapples.com>",
