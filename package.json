@@ -1,16 +1,24 @@
 {
-  "name": "@rchs/react-lib",
+  "name": "@sharingapples/react-lib",
   "version": "0.0.0",
   "description": "React Libraries",
   "workspaces": [
     "packages/*"
   ],
-  "repository": "git@github.com:rchs/react-lib",
+  "repository": "git@github.com:sharingapples/react-lib",
   "author": "Ranjan Shrestha <ranjan@sharingapples.com>",
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
     "@rchs/eslint-config": "^1.0.0",
-    "lerna": "^3.14.1"
+    "jest": "^24.8.0",
+    "lerna": "^3.14.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   }
 }
