@@ -1,0 +1,19 @@
+{
+  "name": "@sharingapples/redux",
+  "version": "0.1.0",
+  "description": "Redux based offline database with index support",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "repository": "git@github.com:rchs/react-lib",
+  "author": "Ranjan Shrestha <ranjan@sharingapples.com>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "redux": "^4.0.1"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  }
+}
