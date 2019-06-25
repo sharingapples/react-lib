@@ -14,9 +14,6 @@
     "access": "public"
   },
   "license": "MIT",
-  "dependencies": {
-    "redux": "^4.0.1"
-  },
   "peerDependencies": {
     "react": "^16.8.6"
   }
