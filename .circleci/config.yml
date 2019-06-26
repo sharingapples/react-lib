@@ -44,6 +44,7 @@ workflows:
     jobs:
       - lint-test
       - publish:
+          context: npm-publishing
           requires:
             - lint-test
           filters:
