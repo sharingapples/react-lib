@@ -42,7 +42,10 @@ workflows:
 
   deploy:
     jobs:
-      - lint-test:
+      - lint-test
+      - publish:
+          requires:
+            - lint-test
           filters:
             branches:
               only:
