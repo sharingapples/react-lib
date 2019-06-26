@@ -30,6 +30,8 @@ export default function schema(name, version, groupByDefs = null) {
     getActor: dispatch => createActor(name, dispatch, groupBys),
     onSave: state => state,
     onRestore: (state) => {
+      if (state === null || state === undefined) return state;
+
       // Avoid errors arising due to version incompatibility
       const restoreState = state;
       restoreState._ = state._;

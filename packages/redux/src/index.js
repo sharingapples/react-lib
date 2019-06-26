@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import schema from './schema';
 import record from './record';
+import createHydrator from './hydrator';
 
 import shallowEqual from './shallowEqual';
 import destructure from './destructure';
@@ -43,4 +44,5 @@ export function createActor(structure, dispatch) {
 export {
   schema,
   record,
+  createHydrator,
 };
