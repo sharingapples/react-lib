@@ -1,0 +1,52 @@
+version: 2.1
+
+executors:
+  node-static:
+    docker:
+      - image: circleci/python:3-node
+
+commands:
+  setup-yarn-repo:
+    steps:
+      - checkout
+      - restore_cache:
+          key: react-lib-yarn-{{ checksum "yarn.lock" }}
+      - run: yarn
+      - save_cache:
+          key: react-lib-yarn-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+jobs:
+  lint-test:
+    executor: node-static
+    steps:
+      - setup-yarn-repo
+      - run:
+          name: Perform lint and test via lerna
+          command: |
+            yarn lerna run lint
+            yarn lerna run test
+
+  publish:
+    executor: node-static
+    steps:
+      - setup-yarn-repo
+      - run:
+          name: Publish libraries
+          command: |
+            yarn lerna publish
+
+workflows:
+  version: 2
+
+  deploy:
+    jobs:
+      - lint-test:
+          filters:
+            branches:
+              only:
+                - master
+
+
+
