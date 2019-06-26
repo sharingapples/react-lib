@@ -1,6 +1,6 @@
 {
   "name": "@sharingapples/redux",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Redux based offline database with index support",
   "main": "src/index.js",
   "scripts": {
