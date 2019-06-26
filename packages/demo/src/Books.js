@@ -46,6 +46,13 @@ function replaceBook() {
   });
 }
 
+function populateBooks() {
+  reduxDB.books.populate([0, 1, 2, 3].map(() => ({
+    id: Math.random(),
+    title: `${Math.random()} via Populate`,
+  })));
+}
+
 export default function Books() {
   const books = useSelector(getAllBooks);
 
@@ -53,6 +60,7 @@ export default function Books() {
     <div>
       <button type="button" onClick={addBook}>Add</button>
       <button type="button" onClick={replaceBook}>Replace</button>
+      <button type="button" onClick={populateBooks}>Populate Books</button>
       <Loading visible={!books}>
         <div>
           {books && books.map(id => <Book key={id} id={id} />)}
