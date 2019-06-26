@@ -1,7 +1,25 @@
 # redux-db
 Redux without boilerplate
 
+## Using hydration
+```javascript
+import { createHydrator, schema, record } from '@sharingapples/redux';
+const books = schema('books', 1);
+const user = record('user');
 
+const structure = { user, books };
+const hydrator = createHydrator(structure, (state) => {
+  localStorage.setItem('skey', JSON.stringify(state));
+});
+
+const reducer = hydrator.enhanceReducer(structureReducer);
+const store = createStore(reducer);
+
+const data = localStorage.getItem('skey');
+if (data) {
+  hydrator.hydrate(store, JSON.parse(data));
+}
+```
 
 ```javascript
 import { schema, record } from '@sharingapples/redux';
