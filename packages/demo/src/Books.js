@@ -1,6 +1,6 @@
 // @flow
-import React from 'react';
-import { useSelector, reduxDB } from './store';
+import React, { useState, useCallback } from 'react';
+import { useSelector, useSelectorMemo, reduxDB } from './store';
 import { getAllBooks, getBook } from './store/selectors';
 
 import Loading from './Loading';
@@ -22,7 +22,7 @@ function Book({ id }: { id: string }) {
 
   return (
     <div>
-      <h3>{book.title}</h3>
+      <h3>{book.title}<span>{book.id}</span></h3>
       <div>
         <button type="button" onClick={editTitle}>Edit</button>
         <button type="button" onClick={replace}>Replace</button>
@@ -53,6 +53,35 @@ function populateBooks() {
   })));
 }
 
+function getFilteredBooks(db, allIds, threshold) {
+  return allIds.filter(id => db.books.get(id).id > threshold);
+}
+
+function getBooks(db, [threshold], filterBooks) {
+  const allIds = db.books.allIds();
+  return filterBooks(db, allIds, threshold);
+}
+
+function FilteredBooks() {
+  const [threshold, setThreshold] = useState(0.5);
+  const updateThreshold = useCallback((e) => {
+    setThreshold(e.target.value);
+  }, []);
+
+  const filterBooks = useSelectorMemo(getFilteredBooks);
+  const books = useSelector(getBooks, [parseFloat(threshold)], filterBooks);
+
+  return (
+    <>
+      <input type="text" value={threshold} onChange={updateThreshold} />
+      <div>
+        <h3>Books with id &gt; {threshold}</h3>
+        {books.map(id => <Book key={id} id={id} />)}
+      </div>
+    </>
+  );
+}
+
 export default function Books() {
   const books = useSelector(getAllBooks);
 
@@ -61,11 +90,18 @@ export default function Books() {
       <button type="button" onClick={addBook}>Add</button>
       <button type="button" onClick={replaceBook}>Replace</button>
       <button type="button" onClick={populateBooks}>Populate Books</button>
-      <Loading visible={!books}>
-        <div>
-          {books && books.map(id => <Book key={id} id={id} />)}
+      <div style={{ display: 'flex' }}>
+        <div style={{ flex: 1 }}>
+          <Loading visible={!books}>
+            <div>
+              {books && books.map(id => <Book key={id} id={id} />)}
+            </div>
+          </Loading>
         </div>
-      </Loading>
+        <div style={{ flex: 1 }}>
+          <FilteredBooks />
+        </div>
+      </div>
     </div>
   );
 }

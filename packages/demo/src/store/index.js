@@ -4,6 +4,7 @@ import {
   createReducer, createSelector, createActor,
   schema, record,
   createHydrator,
+  useSelectorMemo,
 } from '@sharingapples/redux';
 
 const user = record('user');
@@ -30,3 +31,4 @@ if (data) {
 
 export const useSelector = createSelector(structure, store);
 export const reduxDB = createActor(structure, store.dispatch);
+export { useSelectorMemo };
