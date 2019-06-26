@@ -3,15 +3,7 @@ import schema from './schema';
 import record from './record';
 
 import shallowEqual from './shallowEqual';
-
-function destructure(structure, method) {
-  const result = Object.keys(structure).reduce((res, key) => {
-    res[key] = method(structure[key], key);
-    return res;
-  }, {});
-
-  return result;
-}
+import destructure from './destructure';
 
 export function createReducer(structure) {
   return destructure(structure, item => item.getReducer());
