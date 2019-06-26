@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import schema from './schema';
+import record from './record';
+
 import shallowEqual from './shallowEqual';
 
 function destructure(structure, method) {
@@ -48,4 +50,5 @@ export function createActor(structure, dispatch) {
 
 export {
   schema,
+  record,
 };

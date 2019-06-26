@@ -38,6 +38,7 @@ function createActor(scope, dispatch) {
 
 export default function record(scope) {
   return {
+    name: scope,
     getReducer: () => createReducer(scope),
     getSelector: getState => createSelector(getState),
     getActor: dispatch => createActor(scope, dispatch),

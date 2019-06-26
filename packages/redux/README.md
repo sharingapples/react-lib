@@ -4,7 +4,7 @@ Redux without boilerplate
 
 
 ```javascript
-import { schema } from '@sharingapples/redux';
+import { schema, record } from '@sharingapples/redux';
 
 const totalPrice = book => aggr.sum(book.price);
 const totalAmount = copoun => aggr.sum(coupon.amount);
@@ -51,6 +51,11 @@ const useSelector = createSelector(structure, store);
 
 // Use the actor
 reduxDB.books.insert({ id: 1, title: 'Dr. Frankestein' });
+
+// Actions available with `record`
+// reduxDB.user.update({});
+// reduxDB.user.replace({});
+// reduxDB.user.clear();
 
 // Use the selector
 function AwesomeComponent() {
