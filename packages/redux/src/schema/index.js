@@ -24,6 +24,7 @@ export default function schema(name, version, groupByDefs = null) {
     }) : [];
 
   return {
+    name,
     getReducer: () => createReducer(name, version, groupBys),
     getSelector: getState => createSelector(getState, groupBys),
     getActor: dispatch => createActor(name, dispatch, groupBys),
