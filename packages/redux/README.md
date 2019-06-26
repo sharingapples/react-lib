@@ -21,6 +21,44 @@ if (data) {
 }
 ```
 
+## Using memoization with selectors
+```javascript
+import React, { useState } from 'react';
+import { useSelectorMemo } from '@sharingapples/redux';
+import { useSelector } from '../store';
+
+function filterTodos(db, allIds, completed) {
+  return allIds.filter(id => db.todos.get(id).completed === completed);
+}
+
+function getTodos(db, [completed], filter) {
+  const allIds = db.todos.allIds();
+  return completed === null || allIds === null ? allIds : filter(db, allIds, completed);
+}
+
+function useTodos(completed) {
+  useSelector(getTodos, [completed], useSelectorMemo(filterTodos));
+}
+
+function Todo({ id }) {
+  const todo = useSelector(db => db.todos.get(id), [id]);
+  return todo.title;
+}
+
+export default function Todos() {
+  const [completed, setCompleted] = useState(null);
+  const todos = useTodos(completed);
+
+  return (
+    <div>
+      {todos.map(id => <Todo key={id} id={id} />)}
+      <input type="checkbox" checked={completed} onClick={(e) => setCompleted(e.target.value)} />
+    </div>
+  );
+}
+
+```
+
 ```javascript
 import { schema, record } from '@sharingapples/redux';
 
