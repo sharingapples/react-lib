@@ -9,7 +9,7 @@ const populate = (state, action) => {
     res.byId[record.id] = record;
     return res;
   }, {
-    allids: [],
+    allIds: [],
     byId: {},
   });
 };
