@@ -4,7 +4,7 @@ Redux without boilerplate
 
 
 ```javascript
-import { schema } from '@sharingapples/redux-db';
+import { schema } from '@sharingapples/redux';
 
 const totalPrice = book => aggr.sum(book.price);
 const totalAmount = copoun => aggr.sum(coupon.amount);
