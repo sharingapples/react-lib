@@ -42,7 +42,9 @@ workflows:
 
   deploy:
     jobs:
-      - lint-test
+      - lint-test:
+          context: npm-publishing
+
       - publish:
           context: npm-publishing
           requires:

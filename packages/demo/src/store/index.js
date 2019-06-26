@@ -2,20 +2,14 @@
 import { createStore, combineReducers } from 'redux';
 import {
   createReducer, createSelector, createActor,
-  schema,
+  schema, record,
 } from '@sharingapples/redux';
 
+const user = record('user');
 const books = schema('books', 1);
 const authors = schema('authors', 1);
 
-// , {
-//   byAuthor: {
-//     version: 1,
-//     index: book => book.author,
-//   },
-// });
-
-const structure = { books, authors };
+const structure = { user, books, authors };
 
 const reducer = combineReducers(createReducer(structure));
 const store = createStore(
