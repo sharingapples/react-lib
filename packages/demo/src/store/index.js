@@ -28,6 +28,13 @@ const data = localStorage.getItem('my-key');
 if (data) {
   hydrator.hydrate(store, JSON.parse(data));
 }
+window.addEventListener('storage', (e) => {
+  if (e.key === 'my-key') {
+    console.log('[Render]', e.newValue, typeof e.newValue);
+    hydrator.hydrate(store, JSON.parse(e.newValue));
+  }
+});
+
 
 export const useSelector = createSelector(structure, store);
 export const reduxDB = createActor(structure, store.dispatch);
