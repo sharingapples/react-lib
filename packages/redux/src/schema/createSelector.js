@@ -6,7 +6,7 @@ export default function createSelector(getState, groupBys) {
     return state && state._;
   };
 
-  const selector = normalizedGetState(normalizedGetState);
+  const selector = normalizedSelector(normalizedGetState);
   groupBys.forEach((groupBy) => {
     const groupByGetState = () => {
       const state = getState();
@@ -16,7 +16,5 @@ export default function createSelector(getState, groupBys) {
     selector[groupBy.name] = groupBy.getSelector(groupByGetState);
   });
 
-  return {
-    ...normalizedSelector(normalizedGetState),
-  };
+  return selector;
 }
