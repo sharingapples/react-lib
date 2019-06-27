@@ -1,7 +1,5 @@
-/* global __DEV__ */
-
 export default function arrayEqual(a1, a2) {
-  if (__DEV__) {
+  if (process.env.NODE_ENV !== 'production') {
     if (a1.length !== a2.length) {
       throw new Error('Array length for dependencies are expected to be equal. Make sure you are using the selector memoization correctly');
     }

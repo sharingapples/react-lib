@@ -1,4 +1,3 @@
-/* global __DEV__ */
 /* eslint-disable no-console */
 
 import { POPULATE, INSERT, UPDATE, DELETE, UPSERT, REPLACE } from '../types';
@@ -23,7 +22,7 @@ const insert = (state, action) => {
     };
   }
 
-  if (__DEV__) {
+  if (process.env.NODE_ENV !== 'production') {
     if (state.byId[record.id]) {
       console.warn(`Insert record with id ${record.id} when it already exists on schema ${action.schema}`);
     }
@@ -41,7 +40,7 @@ const insert = (state, action) => {
 const update = (state, action) => {
   const record = action.payload;
   if (!state || !state.byId[record.id]) {
-    if (__DEV__) {
+    if (process.env.NODE_ENV !== 'production') {
       console.warn(`Trying to update schema ${action.schema} with record id ${record.id} which doesn't exist`);
     }
     return state;
@@ -62,7 +61,7 @@ const update = (state, action) => {
 const remove = (state, action) => {
   const id = action.payload;
   if (!state || !state.byId[id]) {
-    if (__DEV__) {
+    if (process.env.NODE_ENV !== 'production') {
       console.warn(`Trying to delete a record from schema ${action.schema} with id ${id} which doesn't exist`);
       return state;
     }

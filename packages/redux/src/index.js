@@ -1,4 +1,3 @@
-/* global __DEV__ */
 import { useLayoutEffect, useEffect, useState, useRef } from 'react';
 import schema from './schema';
 import record from './record';
@@ -55,7 +54,7 @@ export function createSelector(structure, store) {
 
     return {
       subscribe: (listener) => {
-        if (__DEV__) {
+        if (process.env.NODE_ENV !== 'production') {
           // eslint-disable-next-line no-console
           if (attached) console.warn('Invalid state there should not be any previously attached listeners');
         }
