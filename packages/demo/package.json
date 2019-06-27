@@ -1,6 +1,6 @@
 {
   "name": "@react-lib/demo",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "React Library Demo",
   "main": "src/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@sharingapples/redux": "^1.0.5",
+    "@sharingapples/redux": "^1.0.6",
     "redux": "^4.0.1"
   },
   "devDependencies": {
