@@ -7,6 +7,7 @@ import GroupBy from './groupBy';
 const reservedKeyWords = [
   'allIds', 'byId', 'version',
   'length', 'values', 'by', '_',
+  'memoize',
 ];
 
 export default function schema(name, version, groupByDefs = null) {
