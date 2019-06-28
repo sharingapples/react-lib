@@ -24,20 +24,13 @@ if (data) {
 ## Using memoization with selectors
 ```javascript
 import React, { useState } from 'react';
-import { useSelectorMemo } from '@sharingapples/redux';
 import { useSelector } from '../store';
 
-function filterTodos(db, allIds, completed) {
-  return allIds.filter(id => db.todos.get(id).completed === completed);
-}
-
-function getTodos(db, [completed], filter) {
-  const allIds = db.todos.allIds();
-  return completed === null || allIds === null ? allIds : filter(db, allIds, completed);
-}
-
-function useTodos(completed) {
-  useSelector(getTodos, [completed], useSelectorMemo(filterTodos));
+function getTodos(selector, [completed]) {
+  const allIds = selector.todos.allIds();
+  return completed === null || allIds === null ? allIds : selector.memoize(() => {
+    return allids.filter(selector => selector.todos.get(id).completed === completed);
+  });
 }
 
 function Todo({ id }) {
@@ -47,7 +40,7 @@ function Todo({ id }) {
 
 export default function Todos() {
   const [completed, setCompleted] = useState(null);
-  const todos = useTodos(completed);
+  const todos = useSelector(getTodos, [completed]);
 
   return (
     <div>
