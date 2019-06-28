@@ -45,41 +45,47 @@ export function createSelector(structure, store) {
   // needs to be updated. When a state tree changes a parent component
   // should be updated prior to the children. Hence a suscriber is created
   // on a per instance basis
-  function createSubscriber() {
-    let attached;
+  class SelectorInstance {
+    constructor() {
+      this.cache = null;
+      this.listener = undefined;
+      this.unsubscribe = store.subscribe(() => {
+        if (this.listener) this.listener();
+      });
 
-    const unsubscribe = store.subscribe(() => {
-      if (attached) attached();
-    });
-
-    return {
-      subscribe: (listener) => {
-        if (process.env.NODE_ENV !== 'production') {
-          // eslint-disable-next-line no-console
-          if (attached) console.warn('Invalid state there should not be any previously attached listeners');
+      this.memoize = (fn, dependencies) => {
+        if (this.cache && arrayEqual(this.cache.dependencies, dependencies)) {
+          return this.cache.value;
         }
-
-        // Invoke the listener when the dependency changes. The useEffect hook would be
-        // reattached in this scenario, and taking this opportunity to trigger the listener
-        if (attached === null) listener();
-        attached = listener;
-        return () => {
-          attached = null;
+        this.cache = {
+          dependencies,
+          value: fn(),
         };
-      },
+        return this.cache.value;
+      };
+    }
 
-      // Called only when the component is unmounted
-      unsubscribe,
-    };
+    subscribe(listener) {
+      // run the listener when only dependency changes
+      if (this.listener === null) listener();
+      this.listener = listener;
+      return () => {
+        this.listener = null;
+      };
+    }
   }
 
-  return function useSelector(mapState, dependencies = [], memo) {
+  return function useSelector(mapState, dependencies = []) {
     const instance = useRef(null);
-    const [state, setState] = useState(() => mapState(selector, dependencies, memo));
-
     if (instance.current === null) {
-      instance.current = createSubscriber();
+      instance.current = new SelectorInstance();
     }
+
+    const [state, setState] = useState(() => {
+      selector.memoize = instance.current.memoize;
+      return mapState(selector, dependencies);
+    });
+
 
     // useEffect uses the state value to initialize the prevValue without
     // keeping it in dependency, which is safe.
@@ -87,7 +93,8 @@ export function createSelector(structure, store) {
       let prevValue = state;
 
       function updateState() {
-        const newValue = mapState(selector, dependencies, memo);
+        selector.memoize = instance.current.memoize;
+        const newValue = mapState(selector, dependencies);
         if (!shallowEqual(newValue, prevValue)) {
           prevValue = newValue;
           setState(newValue);
