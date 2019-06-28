@@ -1,6 +1,6 @@
 // @flow
 import React, { useState, useCallback } from 'react';
-import { useSelector, useSelectorMemo, reduxDB } from './store';
+import { useSelector, reduxDB } from './store';
 import { getAllBooks, getBook } from './store/selectors';
 
 import Loading from './Loading';
@@ -53,14 +53,10 @@ function populateBooks() {
   })));
 }
 
-function getFilteredBooks(db, allIds, threshold) {
-  return allIds.filter(id => db.books.get(id).id > threshold);
-}
-
 function getBooks(db, [threshold]) {
   const allIds = db.books.allIds();
   return db.memoize(() => {
-    return allIds.filter(id => db.books.get(id).id > threshold);
+    return allIds && allIds.filter(id => db.books.get(id).id > threshold);
   }, [allIds, threshold]);
 }
 
@@ -70,15 +66,14 @@ function FilteredBooks() {
     setThreshold(e.target.value);
   }, []);
 
-  const filterBooks = useSelectorMemo(getFilteredBooks);
-  const books = useSelector(getBooks, [parseFloat(threshold)], filterBooks);
+  const books = useSelector(getBooks, [parseFloat(threshold)]);
 
   return (
     <>
       <input type="text" value={threshold} onChange={updateThreshold} />
       <div>
-        <h3>Books with id &gt; {threshold}</h3>
-        {books.map(id => <Book key={id} id={id} />)}
+        <h3>Books with id &gt; {threshold} ({books && books.length})</h3>
+        {books && books.map(id => <Book key={id} id={id} />)}
       </div>
     </>
   );
