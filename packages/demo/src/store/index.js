@@ -30,7 +30,6 @@ if (data) {
 }
 window.addEventListener('storage', (e) => {
   if (e.key === 'my-key') {
-    console.log('[Render]', e.newValue, typeof e.newValue);
     hydrator.hydrate(store, JSON.parse(e.newValue));
   }
 });
