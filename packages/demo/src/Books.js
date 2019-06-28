@@ -57,9 +57,11 @@ function getFilteredBooks(db, allIds, threshold) {
   return allIds.filter(id => db.books.get(id).id > threshold);
 }
 
-function getBooks(db, [threshold], filterBooks) {
+function getBooks(db, [threshold]) {
   const allIds = db.books.allIds();
-  return filterBooks(db, allIds, threshold);
+  return db.memoize(() => {
+    return allIds.filter(id => db.books.get(id).id > threshold);
+  }, [allIds, threshold]);
 }
 
 function FilteredBooks() {
