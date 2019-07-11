@@ -29,8 +29,8 @@ import { useSelector } from '../store';
 function getTodos(selector, [completed]) {
   const allIds = selector.todos.allIds();
   return completed === null || allIds === null ? allIds : selector.memoize(() => {
-    return allids.filter(selector => selector.todos.get(id).completed === completed);
-  });
+    return allIds.filter(selector => selector.todos.get(id).completed === completed);
+  }, [allIds, completed]);
 }
 
 function Todo({ id }) {
