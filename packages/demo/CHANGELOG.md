@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/sharingapples/react-lib/compare/@react-lib/demo@0.1.8...@react-lib/demo@0.1.9) (2019-07-30)
+
+**Note:** Version bump only for package @react-lib/demo
+
+
+
+
+
 ## [0.1.8](https://github.com/sharingapples/react-lib/compare/@react-lib/demo@0.1.7...@react-lib/demo@0.1.8) (2019-06-28)
 
 **Note:** Version bump only for package @react-lib/demo
