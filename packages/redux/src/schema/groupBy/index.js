@@ -74,9 +74,10 @@ export default class GroupBy {
         };
         newState.byValue[value] = valueInfo;
         newState.values.push(value);
+      } else {
+        valueInfo.ids.push(record.id);
       }
 
-      valueInfo.ids.push(record.id);
       this.aggrs.forEach((aggr) => {
         valueInfo[aggr.name] = aggr.calc(valueInfo[aggr.name], record);
       });
