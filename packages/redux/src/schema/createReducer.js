@@ -2,7 +2,7 @@ import { reducer as normalizedReducer } from './normalized';
 
 export default function createReducer(schema, version, groupBys) {
   // Handle common scenario, no groupBys
-  if (groupBys.length === 1) {
+  if (groupBys.length === 0) {
     return (state = { version }, action) => {
       if (action.schema !== schema) return state;
 
