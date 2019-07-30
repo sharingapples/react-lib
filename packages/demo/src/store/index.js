@@ -8,7 +8,12 @@ import {
 } from '@sharingapples/redux';
 
 const user = record('user');
-const books = schema('books', 1);
+const books = schema('books', 1, {
+  byTitle: {
+    version: 1,
+    index: 'title',
+  },
+});
 const authors = schema('authors', 1);
 
 const structure = { user, books, authors };

@@ -13,7 +13,7 @@ export default function createSelector(getState, groupBys) {
       return state && state[groupBy.name];
     };
 
-    selector[groupBy.name] = groupBy.getSelector(groupByGetState);
+    selector[groupBy.name] = groupBy.selector(groupByGetState);
   });
 
   return selector;

@@ -1,7 +1,9 @@
-import { POPULATE } from '../types';
+import { POPULATE, INSERT } from '../types';
+import { getAll } from '../normalized';
 
-function createInitialState() {
+function createInitialState(version) {
   const initialState = {
+    version,
     values: [],
     byValue: {},
   };
@@ -36,62 +38,105 @@ export default class GroupBy {
     this.aggrs = [];
     const reducers = {
       [POPULATE]: this.createPopulate(),
+      [INSERT]: this.createInsert(),
     };
 
     this.reducer = (state, action) => {
       const reducer = reducers[action.type];
-      if (!reducer) return state;
+      if (!reducer) {
+        console.log(`TODO: No reducer found for ${action.type} in groupBy. I really need to implement this fast.`);
+        return state;
+      }
+
       return reducer(state, action);
     };
+  }
+
+  onRestore(state, rootState) {
+    // While restoring resort to populating entire structure
+    // if the version has changed
+    if (state && state.version && state.version >= this.version) {
+      return state;
+    }
+
+    return rootState ? this.generate(getAll(rootState)) : createInitialState(this.version);
+  }
+
+  generate(records) {
+    const newState = createInitialState(this.version);
+    records.forEach((record) => {
+      const value = this.index(record) || null;
+
+      let valueInfo = newState.byValue[value];
+      if (!valueInfo) {
+        valueInfo = {
+          ids: [record.id],
+        };
+        newState.byValue[value] = valueInfo;
+        newState.values.push(value);
+      }
+
+      valueInfo.ids.push(record.id);
+      this.aggrs.forEach((aggr) => {
+        valueInfo[aggr.name] = aggr.calc(valueInfo[aggr.name], record);
+      });
+    });
+    return newState;
+  }
+
+  selector(getState) {
+    return this.aggrs.reduce((res, aggr) => {
+      res[aggr.name] = (value) => {
+        const state = getState();
+        const byValue = state && state.byValue[value];
+        return byValue && byValue[aggr.name];
+      };
+      return res;
+    }, {
+      uniques: () => {
+        const state = getState();
+        return state && state.values;
+      },
+      getIds: (value) => {
+        const state = getState();
+        const byValue = state && state.byValue[value];
+        return byValue && byValue.ids;
+      },
+    });
   }
 
   createPopulate() {
     return (state, action) => {
       const records = action.payload;
-      const newState = createInitialState();
-
-      records.forEach((record) => {
-        const value = this.getValue(record);
-
-        let valueInfo = newState.byValue[value];
-        if (!valueInfo) {
-          valueInfo = {
-            ids: [record.id],
-          };
-          newState.byValue[value] = valueInfo;
-          newState.values.push(value);
-        }
-
-        valueInfo.ids.push(record.id);
-        this.aggrs.forEach((aggr) => {
-          valueInfo[aggr.name] = aggr.calc(valueInfo[aggr.name], record);
-        });
-      });
+      return this.generate(records);
     };
   }
 
-  // createInsert() {
-  //   return (state, action) => {
-  //     const record = action.payload;
-  //     const value = this.getValue(record);
+  createInsert() {
+    return (state, action) => {
+      const record = action.payload;
+      const value = this.index(record);
 
-  //     const newState = state ? Object.assign({}, state) : {
-  //       values: [value],
-  //       byValue: {
-  //         [value]: {
-  //           ids: [record.id],
-  //         },
-  //       },
-  //     };
+      const newState = state ? Object.assign({}, state) : createInitialState(this.version);
 
-  //     this.aggrs.forEach((aggr) => {
-  //       const valueInfo = newState.byValue[value];
-  //       const prev = valueInfo[aggr.name];
-  //       valueInfo[aggr.name] = aggr.calc(prev, record);
-  //     });
-  //     return newState;
-  //   };
-  // }
+      let valueInfo = newState.byValue[value];
+      if (!valueInfo) {
+        valueInfo = {
+          ids: [record.id],
+        };
+        newState.values = newState.values.concat(value);
+        newState.byValue[value] = valueInfo;
+      } else {
+        valueInfo.ids = valueInfo.ids.concat(record.id);
+      }
+
+      this.aggrs.forEach((aggr) => {
+        const prev = valueInfo[aggr.name];
+        valueInfo[aggr.name] = aggr.calc(prev, record);
+      });
+      return newState;
+    };
+  }
 
   getReducer() {
     return this.reducer;

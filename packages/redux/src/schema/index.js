@@ -39,10 +39,15 @@ export default function schema(name, version, groupByDefs = null) {
       let changed = false;
       groupBys.forEach((groupBy) => {
         const prevState = state[groupBy.name];
-        const nextState = groupBy.onRestore(prevState);
+        const nextState = groupBy.onRestore(prevState, restoreState._);
         restoreState[groupBy.name] = nextState;
         changed = changed || prevState !== nextState;
       });
+
+      // In case the some of the index has been removed, then
+      // also consider the state as changed
+      changed = changed || (Object.keys(state).length !== Object.keys(restoreState).length);
+
       return changed ? restoreState : state;
     },
   };
