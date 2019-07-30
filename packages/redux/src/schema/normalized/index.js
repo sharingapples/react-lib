@@ -108,6 +108,10 @@ const reducers = {
   [UPSERT]: upsert,
 };
 
+export function getAll(state) {
+  return state.allIds.map(id => state.byId[id]);
+}
+
 export function selector(getState) {
   return {
     allIds: () => {

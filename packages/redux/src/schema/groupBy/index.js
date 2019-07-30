@@ -12,7 +12,24 @@ function createInitialState() {
 
 export default class GroupBy {
   constructor(name, definition) {
+    if (process.env.NODE_ENV === 'development') {
+      // validate the groupBy definition
+      if (!definition.version || typeof definition.version !== 'number') {
+        throw new Error(`GroupBy definition for ${name} doesn't have valid version number`);
+      }
+
+      if (!definition.index) {
+        throw new Error(`GroupBy definition for ${name} doesn't have a index field or method`);
+      }
+    }
+
     this.name = name;
+    this.index = typeof definition.index === 'string'
+      ? record => record[definition.index]
+      : definition.index;
+
+    this.version = definition.version;
+
     this.definition = definition;
 
     // Get the aggregations from the definitions
