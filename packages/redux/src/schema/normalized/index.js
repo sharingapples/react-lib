@@ -131,7 +131,7 @@ export function selector(getState) {
 
 export function actionCreator(schema) {
   return {
-    popuplate: records => ({ type: POPULATE, schema, payload: records }),
+    populate: records => ({ type: POPULATE, schema, payload: records }),
     insert: record => ({ type: INSERT, schema, payload: record }),
     update: record => ({ type: UPDATE, schema, payload: record }),
     delete: id => ({ type: DELETE, schema, payload: id }),
