@@ -129,15 +129,26 @@ export function selector(getState) {
   };
 }
 
-export function actor(schema, dispatch) {
+export function action(schema) {
   return {
-    populate: records => dispatch({ type: POPULATE, schema, payload: records }),
-    insert: record => dispatch({ type: INSERT, schema, payload: record }),
-    update: record => dispatch({ type: UPDATE, schema, payload: record }),
-    delete: id => dispatch({ type: DELETE, schema, payload: id }),
-    replace: record => dispatch({ type: REPLACE, schema, payload: record }),
-    upsert: record => dispatch({ type: UPSERT, schema, payload: record }),
+    popuplate: records => ({ type: POPULATE, schema, payload: records }),
+    insert: record => ({ type: INSERT, schema, payload: record }),
+    update: record => ({ type: UPDATE, schema, payload: record }),
+    delete: id => ({ type: DELETE, schema, payload: id }),
+    replace: record => ({ type: REPLACE, schema, payload: record }),
+    upsert: record => ({ type: UPSERT, schema, payload: record }),
   };
+}
+
+export function actor(schema, dispatch) {
+  const actions = action(schema);
+  const res = {};
+  Object.keys(actions).forEach((key) => {
+    const actionFn = actions[key];
+    res[key] = arg => dispatch(actionFn(arg));
+  });
+
+  return res;
 }
 
 export function reducer(state = null, action) {

@@ -1,6 +1,7 @@
 import createReducer from './createReducer';
 import createSelector from './createSelector';
 import createActor from './createActor';
+import createAction from './createAction';
 
 import GroupBy from './groupBy';
 
@@ -29,6 +30,7 @@ export default function schema(name, version, groupByDefs = null) {
     getReducer: () => createReducer(name, version, groupBys),
     getSelector: getState => createSelector(getState, groupBys),
     getActor: dispatch => createActor(name, dispatch, groupBys),
+    getAction: () => createAction(name),
     onSave: state => state,
     onRestore: (state) => {
       if (state === null || state === undefined) return state;
