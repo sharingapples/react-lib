@@ -129,7 +129,7 @@ export function selector(getState) {
   };
 }
 
-export function action(schema) {
+export function actionCreator(schema) {
   return {
     popuplate: records => ({ type: POPULATE, schema, payload: records }),
     insert: record => ({ type: INSERT, schema, payload: record }),
@@ -141,7 +141,7 @@ export function action(schema) {
 }
 
 export function actor(schema, dispatch) {
-  const actions = action(schema);
+  const actions = actionCreator(schema);
   const res = {};
   Object.keys(actions).forEach((key) => {
     const actionFn = actions[key];

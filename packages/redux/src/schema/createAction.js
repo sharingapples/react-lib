@@ -1,1 +1,1 @@
-export { action as default } from './normalized';
+export { actionCreator as default } from './normalized';
