@@ -13,80 +13,126 @@ const populate = (state, action) => {
   });
 };
 
+// eslint-disable-next-line no-underscore-dangle
+function _reduce(payload, fn) {
+  if (Array.isArray(payload)) {
+    return payload.reduce((res, rec) => fn(rec) || res, false);
+  }
+  return fn(payload);
+}
+
+
 const insert = (state, action) => {
-  const record = action.payload;
-  if (!state) {
+  const byId = state ? Object.assign({}, state.byId) : {};
+  const allIds = state ? state.allIds.slice() : [];
+
+  function insertOne(record) {
+    if (byId[record.id]) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`Insert record with id ${record.id} when it already exists on schema ${action.schema}`);
+      }
+      return false;
+    }
+
+    allIds.push(record.id);
+    byId[record.id] = record;
+    return true;
+  }
+
+  if (_reduce(action.payload, insertOne)) {
     return {
-      allIds: [record.id],
-      byId: { [record.id]: record },
+      allIds,
+      byId,
     };
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    if (state.byId[record.id]) {
-      console.warn(`Insert record with id ${record.id} when it already exists on schema ${action.schema}`);
-    }
-  }
-
-  return {
-    allIds: state.allIds.concat(record.id),
-    byId: {
-      ...state.byId,
-      [record.id]: record,
-    },
-  };
+  return state;
 };
 
 const update = (state, action) => {
-  const record = action.payload;
-  if (!state || !state.byId[record.id]) {
+  if (!state) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn(`Trying to update schema ${action.schema} with record id ${record.id} which doesn't exist`);
+      console.warn(`Trying to update schema ${action.schema} which isn't initialized`);
     }
     return state;
   }
 
-  return {
-    allIds: state.allIds,
-    byId: {
-      ...state.byId,
-      [record.id]: {
-        ...state.byId[record.id],
-        ...record,
-      },
-    },
-  };
+  const byId = Object.assign({}, state.byId);
+  function updateOne(record) {
+    if (!byId[record.id]) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`Trying to update schema ${action.schema} with record id ${record.id} which doesn't exists`);
+      }
+      return false;
+    }
+
+    byId[record.id] = Object.assign({}, byId[record.id], record);
+    return true;
+  }
+
+  if (_reduce(action.payload, updateOne)) {
+    return {
+      allIds: state.allIds,
+      byId,
+    };
+  }
+
+  return state;
 };
 
 const remove = (state, action) => {
-  const id = action.payload;
-  if (!state || !state.byId[id]) {
+  if (!state) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn(`Trying to delete a record from schema ${action.schema} with id ${id} which doesn't exist`);
-      return state;
+      console.warn(`Trying to delete a record from schema ${action.schema} which hasn't been initialized`);
     }
+    return state;
   }
 
-  const clone = Object.assign({}, state.byId);
-  delete clone[id];
-  return {
-    allIds: state.allIds.filter(rid => rid !== id),
-    byId: clone,
-  };
+  const byId = Object.assign({}, state.byId);
+  const allIds = state.allIds.slice();
+  function removeOne(id) {
+    if (!byId[id]) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`Trying to delete a record from schame ${action.schema} with id ${id} which doesn't exist`);
+      }
+      return false;
+    }
+    const idx = allIds.indexOf(id);
+    allIds.splice(idx, 1);
+    delete byId[id];
+    return true;
+  }
+
+  if (_reduce(action.payload, removeOne)) {
+    return {
+      byId,
+      allIds,
+    };
+  }
+
+  return state;
 };
 
 const replace = (state, action) => {
-  const record = action.payload;
-  if (!state || !state.byId[record.id]) {
+  if (!state) {
     return insert(state, action);
   }
 
+  const newIds = [];
+  const byId = Object.assign({}, state.byId);
+
+  function replaceOne(record) {
+    if (!byId[record.id]) {
+      newIds.push(record.id);
+    }
+    byId[record.id] = record;
+  }
+
+  _reduce(action.payload, replaceOne);
+
   return {
-    allIds: state.allIds,
-    byId: {
-      ...state.byId,
-      [record.id]: record,
-    },
+    allIds: newIds.length === 0 ? state.allIds : state.allIds.concat(newIds),
+    byId,
   };
 };
 
