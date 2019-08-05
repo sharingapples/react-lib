@@ -1,5 +1,6 @@
 import { POPULATE, INSERT } from '../types';
 import { getAll } from '../normalized';
+import _reducePayload from '../_reducePayload';
 
 function createInitialState(version) {
   const initialState = {
@@ -116,25 +117,32 @@ export default class GroupBy {
   createInsert() {
     return (state, action) => {
       const record = action.payload;
-      const value = this.index(record);
-
       const newState = state ? Object.assign({}, state) : createInitialState(this.version);
 
-      let valueInfo = newState.byValue[value];
-      if (!valueInfo) {
-        valueInfo = {
-          ids: [record.id],
-        };
-        newState.values = newState.values.concat(value);
-        newState.byValue[value] = valueInfo;
-      } else {
-        valueInfo.ids = valueInfo.ids.concat(record.id);
+      function insertOne() {
+        const value = this.index(record);
+
+        let valueInfo = newState.byValue[value];
+        if (!valueInfo) {
+          valueInfo = {
+            ids: [record.id],
+          };
+          newState.values = newState.values.concat(value);
+          newState.byValue[value] = valueInfo;
+        } else {
+          valueInfo.ids = valueInfo.ids.concat(record.id);
+        }
+
+        this.aggrs.forEach((aggr) => {
+          const prev = valueInfo[aggr.name];
+          valueInfo[aggr.name] = aggr.calc(prev, record);
+        });
+
+        return true;
       }
 
-      this.aggrs.forEach((aggr) => {
-        const prev = valueInfo[aggr.name];
-        valueInfo[aggr.name] = aggr.calc(prev, record);
-      });
+      _reducePayload(action.payload, insertOne);
+
       return newState;
     };
   }
