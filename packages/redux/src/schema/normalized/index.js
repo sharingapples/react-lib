@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { POPULATE, INSERT, UPDATE, DELETE, UPSERT, REPLACE } from '../types';
+import { POPULATE, INSERT, UPDATE, DELETE, REPLACE } from '../types';
 
 const populate = (state, action) => {
   return action.payload.reduce((res, record) => {
@@ -90,22 +90,12 @@ const replace = (state, action) => {
   };
 };
 
-const upsert = (state, action) => {
-  const record = action.payload;
-  if (!state || !state.byId[record.id]) {
-    return insert(state, action);
-  }
-
-  return update(state, action);
-};
-
 const reducers = {
   [POPULATE]: populate,
   [INSERT]: insert,
   [UPDATE]: update,
   [DELETE]: remove,
   [REPLACE]: replace,
-  [UPSERT]: upsert,
 };
 
 export function getAll(state) {
@@ -136,7 +126,6 @@ export function actionCreator(schema) {
     update: record => ({ type: UPDATE, schema, payload: record }),
     delete: id => ({ type: DELETE, schema, payload: id }),
     replace: record => ({ type: REPLACE, schema, payload: record }),
-    upsert: record => ({ type: UPSERT, schema, payload: record }),
   };
 }
 
