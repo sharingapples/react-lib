@@ -126,6 +126,7 @@ const replace = (state, action) => {
       newIds.push(record.id);
     }
     byId[record.id] = record;
+    return true;
   }
 
   _reduce(action.payload, replaceOne);
