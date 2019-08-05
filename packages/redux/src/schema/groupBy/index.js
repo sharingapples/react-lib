@@ -116,10 +116,8 @@ export default class GroupBy {
 
   createInsert() {
     return (state, action) => {
-      const record = action.payload;
       const newState = state ? Object.assign({}, state) : createInitialState(this.version);
-
-      function insertOne() {
+      const insertOne = (record) => {
         const value = this.index(record);
 
         let valueInfo = newState.byValue[value];
@@ -139,7 +137,7 @@ export default class GroupBy {
         });
 
         return true;
-      }
+      };
 
       _reducePayload(action.payload, insertOne);
 
