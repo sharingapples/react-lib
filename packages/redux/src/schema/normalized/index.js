@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { POPULATE, INSERT, UPDATE, DELETE, REPLACE } from '../types';
+import _reduce from '../_reducePayload';
 
 const populate = (state, action) => {
   return action.payload.reduce((res, record) => {
@@ -12,15 +13,6 @@ const populate = (state, action) => {
     byId: {},
   });
 };
-
-// eslint-disable-next-line no-underscore-dangle
-function _reduce(payload, fn) {
-  if (Array.isArray(payload)) {
-    return payload.reduce((res, rec) => fn(rec) || res, false);
-  }
-  return fn(payload);
-}
-
 
 const insert = (state, action) => {
   const byId = state ? Object.assign({}, state.byId) : {};
