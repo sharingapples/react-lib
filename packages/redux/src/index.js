@@ -34,7 +34,7 @@ export function useSelectorMemo(fn) {
   };
 }
 
-export function createSelector(structure, store) {
+export function createSelector(structure, store, equalityFn = shallowEqual) {
   const selector = destructure(structure, (item, key) => {
     const getState = () => store.getState()[key];
     return item.getSelector(getState);
@@ -95,7 +95,7 @@ export function createSelector(structure, store) {
       function updateState() {
         selector.memoize = instance.current.memoize;
         const newValue = mapState(selector, dependencies);
-        if (!shallowEqual(newValue, prevValue)) {
+        if (!equalityFn(newValue, prevValue)) {
           prevValue = newValue;
           setState(newValue);
         }
