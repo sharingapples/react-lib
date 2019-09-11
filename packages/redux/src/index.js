@@ -35,10 +35,12 @@ export function useSelectorMemo(fn) {
 }
 
 export function createSelector(structure, store, equalityFn = shallowEqual) {
-  const selector = destructure(structure, (item, key) => {
+  const selector = structure ? destructure(structure, (item, key) => {
     const getState = () => store.getState()[key];
     return item.getSelector(getState);
-  });
+  }) : {
+    getState: store.getState,
+  };
 
   // With useEffect, the subscription happens for the child first and then
   // the parent. This would create an unintended behaviour when the state
