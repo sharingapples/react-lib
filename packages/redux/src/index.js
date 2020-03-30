@@ -34,6 +34,12 @@ export function useSelectorMemo(fn) {
   };
 }
 
+export function createGetState(structure, store) {
+  return structure ? destructure(structure, (item, key) => {
+    return () => store.getState()[key];
+  }) : store.getState;
+}
+
 export function createSelector(structure, store, equalityFn = shallowEqual) {
   const selector = structure ? destructure(structure, (item, key) => {
     const getState = () => store.getState()[key];
