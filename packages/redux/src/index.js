@@ -34,19 +34,17 @@ export function useSelectorMemo(fn) {
   };
 }
 
-export function createGetState(structure, store) {
+export function createGenericSelector(structure, store) {
   return structure ? destructure(structure, (item, key) => {
-    return () => store.getState()[key];
-  }) : store.getState;
-}
-
-export function createSelector(structure, store, equalityFn = shallowEqual) {
-  const selector = structure ? destructure(structure, (item, key) => {
     const getState = () => store.getState()[key];
     return item.getSelector(getState);
   }) : {
     getState: store.getState,
   };
+}
+
+export function createSelector(structure, store, equalityFn = shallowEqual) {
+  const selector = createGenericSelector(structure, store);
 
   // With useEffect, the subscription happens for the child first and then
   // the parent. This would create an unintended behaviour when the state
