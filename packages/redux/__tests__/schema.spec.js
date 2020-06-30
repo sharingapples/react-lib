@@ -95,4 +95,26 @@ describe('schema api check', () => {
     expect(selector.get(2)).toEqual(undefined);
     expect(selector.get(3)).toEqual(sampleRecs[2]);
   });
+
+  it('check groupBy operations', () => {
+    const example = schema('example', 1, {
+      byName: {
+        version: 1,
+        index: record => record.name,
+      },
+    });
+
+    let state;
+    const reducer = example.getReducer();
+    const actions = example.getAction();
+
+    state = reducer(state, actions.insert({ id: 1, name: 'k', value: 'Kite' }));
+    state = reducer(state, actions.insert({ id: 2, name: 'k', value: 'Kangaroo' }));
+    expect(state).toEqual({ _: { allIds: [1, 2], byId: { 1: { id: 1, name: 'k', value: 'Kite' }, 2: { id: 2, name: 'k', value: 'Kangaroo' } } }, byName: { byValue: { k: { ids: [1, 2] } }, values: ['k'], version: 1 }, version: 1 });
+    state = reducer(state, actions.delete(2));
+    expect(state).toEqual({ _: { allIds: [1], byId: { 1: { id: 1, name: 'k', value: 'Kite' } } }, byName: { byValue: { k: { ids: [1] } }, values: ['k'], version: 1 }, version: 1 });
+    state = reducer(state, actions.delete(1));
+    // eslint-disable-next-line
+    expect(state).toEqual({ _: { allIds: [], byId: {} }, byName: { byValue: {}, values: [], version: 1 }, version: 1 });
+  });
 });

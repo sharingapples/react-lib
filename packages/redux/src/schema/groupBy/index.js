@@ -1,4 +1,4 @@
-import { POPULATE, INSERT } from '../types';
+import { POPULATE, INSERT, DELETE } from '../types';
 import { getAll } from '../normalized';
 import _reducePayload from '../_reducePayload';
 
@@ -40,6 +40,7 @@ export default class GroupBy {
     const reducers = {
       [POPULATE]: this.createPopulate(),
       [INSERT]: this.createInsert(),
+      [DELETE]: this.createDelete(),
     };
 
     this.reducer = (state, action) => {
@@ -111,6 +112,38 @@ export default class GroupBy {
     return (state, action) => {
       const records = action.payload;
       return this.generate(records);
+    };
+  }
+
+  // TODO: An inefficient delete op has been implemented. Need to replace it with an efficient one
+  // eslint-disable-next-line
+  createDelete() {
+    return (state, action) => {
+      const id = action.payload;
+      // Find out the value corresponding to this record id
+      const values = Object.keys(state.byValue);
+      for (let i = 0; i < values.length; i += 1) {
+        const value = values[i];
+        const valueInfo = state.byValue[value];
+        const idx = valueInfo.ids.indexOf(id);
+        if (idx >= 0) {
+          const newState = Object.assign({}, state);
+          if (valueInfo.ids.length === 1) {
+            // When removing the last one, remove from the entire value as well
+            delete newState.byValue[value];
+            newState.values = newState.values.filter(v => v !== value);
+          } else {
+            newState.byValue = {
+              ...newState.byValue,
+              [value]: {
+                ids: valueInfo.ids.filter(d => d !== id),
+              },
+            };
+          }
+          return newState;
+        }
+      }
+      return state;
     };
   }
 
